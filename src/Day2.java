@@ -23,7 +23,26 @@ public class Day2 {
         var gameSplit = line.split(":");
         // One line = one game
         Game game = new Game(parseGameId(gameSplit[0]));
+        handleGameData(gameSplit[1], game);
         System.out.println(game);
+    }
+
+    private static void handleGameData(String gameData, Game game) {
+        var gameDataSplit = gameData.split(";");
+        for (String data : gameDataSplit) {
+            handleData(data, game);
+        }
+    }
+
+    private static void handleData(String data, Game game) {
+        var dataSplit = data.split(",");
+        for (String entry : dataSplit) {
+            var entrySplit = entry.split(" ");
+            int entryAmount = Integer.parseInt(entrySplit[1]);
+            String color = entrySplit[2];
+
+            game.checkAndUpdate(entryAmount, color);
+        }
     }
 
     private static int parseGameId(String src) {
@@ -75,6 +94,10 @@ public class Day2 {
 
         public String toString() {
             return String.valueOf(id);
+        }
+
+        public static void checkAndUpdate(int amount, String color) {
+            System.out.println(amount + color);
         }
     }
 }
