@@ -6,11 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Day1And2 {
+public class Day1 {
     private static List<Integer> resultList = new ArrayList<>();
 
     public static void main(String[] args) {
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader("test.data"))) {
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader("Day1.data"))) {
             String line = bufferedReader.readLine();
 
             while (line != null) {
