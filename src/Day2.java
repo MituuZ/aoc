@@ -1,8 +1,12 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Day2 {
+    public static List<Integer> validIds = new ArrayList<>();
+
     public static void main(String[] args) {
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader("sources/Day2.data"))) {
             String line = bufferedReader.readLine();
@@ -14,6 +18,13 @@ public class Day2 {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        int retSum = 0;
+        for (int i : validIds) {
+            retSum += i;
+        }
+
+        System.out.println(retSum);
     }
 
     private static void processLine(String line) {
@@ -24,6 +35,9 @@ public class Day2 {
         // One line = one game
         Game game = new Game(parseGameId(gameSplit[0]));
         handleGameData(gameSplit[1], game);
+        if (game.checkAgainstValues(13, 12, 14)) {
+            validIds.add(game.getId());
+        }
         System.out.println(game);
     }
 
@@ -55,45 +69,17 @@ public class Day2 {
     }
 
     public static class Game {
-        private int id;
+        private final int id;
         private int maxRed = 0;
         private int maxGreen = 0;
         private int maxBlue = 0;
-
-        public Game(int id) {
-            this.id = id;
-        }
 
         public int getId() {
             return id;
         }
 
-        public void setId(int id) {
+        public Game(int id) {
             this.id = id;
-        }
-
-        public int getMaxRed() {
-            return maxRed;
-        }
-
-        public void setMaxRed(int maxRed) {
-            this.maxRed = maxRed;
-        }
-
-        public int getMaxGreen() {
-            return maxGreen;
-        }
-
-        public void setMaxGreen(int maxGreen) {
-            this.maxGreen = maxGreen;
-        }
-
-        public int getMaxBlue() {
-            return maxBlue;
-        }
-
-        public void setMaxBlue(int maxBlue) {
-            this.maxBlue = maxBlue;
         }
 
         public String toString() {
@@ -121,6 +107,10 @@ public class Day2 {
                     throw new Exception("Color not implemented!");
             }
             System.out.println(amount + color);
+        }
+
+        public boolean checkAgainstValues(int g, int r, int b) {
+            return maxBlue <= b && maxRed <= r && maxGreen <= g;
         }
     }
 }
