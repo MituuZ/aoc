@@ -31,9 +31,11 @@ public class Day1And2 {
         int firstInt = -1;
         int secondInt = -1;
 
-        int find = findString(line, "one");
-        if (find != -1) {
-            System.out.println(line + " contains one/1 :" + find);
+        List<Integer> find = findString(line, "one");
+        if (!find.isEmpty()) {
+            for (int i : find)  {
+                System.out.println(line + " contains one/1 at: " + i);
+            }
         }
 
         int i = 0;
@@ -61,42 +63,45 @@ public class Day1And2 {
     }
 
     /**
-     * Returns the int of the FIRST match of the string
+     * Checks if source string contains the find string
+     *
      * @param src source String to search
      * @param find String to search
-     * @return -1 if no matches or the index of the match start
+     * @return empty list if no matches or a list of indexes
      */
-    private static int findString(String src, String find) {
+    private static List<Integer> findString(String src, String find) {
+        List<Integer> foundIndexes = new ArrayList<>();
         StringBuilder currentString = new StringBuilder();
-        int startingInt = -1;
+        int startingInd = -1;
 
         int i = 0;
         while (i < src.length()) {
             char c = src.charAt(i);
 
-            if (currentString.toString().equals(find)) {
-                return startingInt;
-            }
-
             if (c == find.charAt(currentString.length())) {
                 if (currentString.isEmpty()) {
-                    startingInt = i;
+                    startingInd = i;
                 }
                 currentString.append(c);
             } else {
-                // Does not handle a string that starts at this point
                 currentString = new StringBuilder();
-                startingInt = -1;
+                startingInd = -1;
                 if (c == find.charAt(currentString.length())) {
                     if (currentString.isEmpty()) {
-                        startingInt = i;
+                        startingInd = i;
                     }
                     currentString.append(c);
                 }
             }
+
+            if (currentString.toString().equals(find)) {
+                foundIndexes.add(startingInd);
+                startingInd = -1;
+                currentString = new StringBuilder();
+            }
             i++;
         }
 
-        return startingInt;
+        return foundIndexes;
     }
 }
