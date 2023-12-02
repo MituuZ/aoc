@@ -30,10 +30,11 @@ public class Day1And2 {
     }
 
     private static void processLine(String line) {
-        int firstInt = -1;
-        int secondInt = -1;
-
         Map<Integer, String> allMatches = mapValues(line);
+        List<Integer> sorted = allMatches.keySet().stream().sorted().toList();
+
+        int firstInt = Integer.parseInt(allMatches.get(sorted.get(0)));
+        int secondInt = Integer.parseInt(allMatches.get(sorted.get(sorted.size()-1)));
 
         for (Integer s : allMatches.keySet()) {
             System.out.println(s + " " + allMatches.get(s));
