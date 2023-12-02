@@ -2,7 +2,9 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Day1And2 {
     private static List<Integer> resultList = new ArrayList<>();
@@ -31,35 +33,33 @@ public class Day1And2 {
         int firstInt = -1;
         int secondInt = -1;
 
-        List<Integer> find = findString(line, "one");
-        if (!find.isEmpty()) {
-            for (int i : find)  {
-                System.out.println(line + " contains one/1 at: " + i);
-            }
-        }
+        Map<Integer, String> allMatches = mapValues(line);
 
-        int i = 0;
-        while (i < line.length()) {
-            char c = line.charAt(i);
-            int converted = -1;
-            try {
-                converted = Integer.parseInt(Character.toString(c));
-            } catch (NumberFormatException e) {
-                i++;
-                continue;
-            }
-
-            if (firstInt == -1) {
-                firstInt = converted;
-            }
-            secondInt = converted;
-
-            i++;
+        for (Integer s : allMatches.keySet()) {
+            System.out.println(s + " " + allMatches.get(s));
         }
 
         String stringRep = firstInt + String.valueOf(secondInt);
         resultList.add(Integer.parseInt(stringRep));
         System.out.println(stringRep);
+    }
+
+    private static Map<Integer, String> mapValues(String line) {
+        Map<Integer, String> resultMap = new HashMap<>();
+        List<String> stringsToCheck = List.of("one","1","two","2","three","3","four","4","five","5",
+                "six","6","seven","7","eight","8","nine","9");
+
+        for (String s : stringsToCheck) {
+            List<Integer> matchIndexes = findString(line, s);
+            if (!matchIndexes.isEmpty()) {
+                for (int i : matchIndexes) {
+                    s = formatString(s);
+                    resultMap.put(i, s);
+                }
+            }
+        }
+
+        return resultMap;
     }
 
     /**
@@ -103,5 +103,39 @@ public class Day1And2 {
         }
 
         return foundIndexes;
+    }
+
+    private static String formatString(String s) {
+        switch (s) {
+            case "one":
+                s = "1";
+                break;
+            case "two":
+                s = "2";
+                break;
+            case "three":
+                s = "3";
+                break;
+            case "four":
+                s = "4";
+                break;
+            case "five":
+                s = "5";
+                break;
+            case "six":
+                s = "6";
+                break;
+            case "seven":
+                s = "7";
+                break;
+            case "eight":
+                s = "8";
+                break;
+            case "nine":
+                s = "9";
+                break;
+        }
+
+        return s;
     }
 }
