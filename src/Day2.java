@@ -96,7 +96,9 @@ public class Day2 {
             return String.valueOf(id);
         }
 
-        public static void checkAndUpdate(int amount, String color) {
+        public void checkAndUpdate(int amount, String color) {
+            // ToDo: Implement this
+            // Compare values to current highest and update them if necessary
             System.out.println(amount + color);
         }
     }
