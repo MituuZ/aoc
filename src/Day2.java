@@ -41,7 +41,11 @@ public class Day2 {
             int entryAmount = Integer.parseInt(entrySplit[1]);
             String color = entrySplit[2];
 
-            game.checkAndUpdate(entryAmount, color);
+            try {
+                game.checkAndUpdate(entryAmount, color);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
         }
     }
 
@@ -52,9 +56,9 @@ public class Day2 {
 
     public static class Game {
         private int id;
-        private int maxRed;
-        private int maxGreen;
-        private int maxBlue;
+        private int maxRed = 0;
+        private int maxGreen = 0;
+        private int maxBlue = 0;
 
         public Game(int id) {
             this.id = id;
@@ -93,12 +97,29 @@ public class Day2 {
         }
 
         public String toString() {
-            return String.valueOf(id);
+            return String.format("%d has max values of red: %d green: %d blue: %d", id, maxRed, maxGreen, maxBlue);
         }
 
-        public void checkAndUpdate(int amount, String color) {
-            // ToDo: Implement this
-            // Compare values to current highest and update them if necessary
+        public void checkAndUpdate(int amount, String color) throws Exception {
+            switch (color) {
+                case "green":
+                    if (amount > maxGreen) {
+                        maxGreen = amount;
+                    }
+                    break;
+                case "red":
+                    if (amount > maxRed) {
+                        maxRed = amount;
+                    }
+                    break;
+                case "blue":
+                    if (amount > maxBlue) {
+                        maxBlue = amount;
+                    }
+                    break;
+                default:
+                    throw new Exception("Color not implemented!");
+            }
             System.out.println(amount + color);
         }
     }
