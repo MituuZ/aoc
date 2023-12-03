@@ -32,7 +32,13 @@ public class Day3 {
 
     private void deloadNodes() {
         for (Node n : nodeContainer.getNodeList()) {
-            System.out.println(n);
+            // Here we'll have to check if the node is numeric and if it touches a symbol
+            // We'll have to concat the strings that are next to each other
+            // And combine the adjacent checks to see if any of the numbers touch a symbol
+
+            if (n.isNumeric()) {
+                System.out.println(n);
+            }
         }
     }
 
@@ -59,6 +65,15 @@ public class Day3 {
         public String toString() {
             return String.format("Node at location %d,%d with value %s", location.x, location.y, contents);
         }
+
+        public boolean isNumeric() {
+            try {
+                Integer.parseInt(contents);
+                return true;
+            } catch (NumberFormatException e) {
+                return false;
+            }
+        }
     }
 
     public static class NodeContainer {
@@ -72,13 +87,17 @@ public class Day3 {
             return nodeList;
         }
 
-        public Node getNode(Vector2 location) {
+        private Node getNode(Vector2 location) {
             for (Node n : nodeList) {
                 if (n.location.equals(location)) {
                     return n;
                 }
             }
             return null;
+        }
+
+        public void checkAdjacentNodes() {
+
         }
     }
 
