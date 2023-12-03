@@ -5,7 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Day2 {
-    public static List<Integer> validIds = new ArrayList<>();
+    protected static final List<Integer> validIds = new ArrayList<>();
+    protected static int powerSum = 0;
 
     public static void main(String[] args) {
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader("sources/Day2.data"))) {
@@ -24,7 +25,8 @@ public class Day2 {
             retSum += i;
         }
 
-        System.out.println(retSum);
+        System.out.printf("First part result: %d%n", retSum);
+        System.out.printf("Secon part result: %d", powerSum);
     }
 
     private static void processLine(String line) {
@@ -38,6 +40,7 @@ public class Day2 {
         if (game.checkAgainstValues(13, 12, 14)) {
             validIds.add(game.getId());
         }
+        powerSum += game.getPower();
         System.out.println(game);
     }
 
@@ -71,8 +74,11 @@ public class Day2 {
     public static class Game {
         private final int id;
         private int maxRed = 0;
+        private int minRed = 99;
         private int maxGreen = 0;
+        private int minGreen = 99;
         private int maxBlue = 0;
+        private int minBlue = 99;
 
         public int getId() {
             return id;
@@ -83,7 +89,9 @@ public class Day2 {
         }
 
         public String toString() {
-            return String.format("%d has max values of red: %d green: %d blue: %d", id, maxRed, maxGreen, maxBlue);
+            return String.format("%d has max values of red: %d green: %d blue: %d \n" +
+                    "%d has min values of red: %d green: %d blue: %d with power %d",
+                    id, maxRed, maxGreen, maxBlue, id, minRed, minGreen, minBlue, getPower());
         }
 
         public void checkAndUpdate(int amount, String color) throws Exception {
@@ -92,25 +100,37 @@ public class Day2 {
                     if (amount > maxGreen) {
                         maxGreen = amount;
                     }
+                    if (amount < minGreen) {
+                        minGreen = amount;
+                    }
                     break;
                 case "red":
                     if (amount > maxRed) {
                         maxRed = amount;
+                    }
+                    if (amount < minRed) {
+                        minRed = amount;
                     }
                     break;
                 case "blue":
                     if (amount > maxBlue) {
                         maxBlue = amount;
                     }
+                    if (amount < minBlue) {
+                        minBlue = amount;
+                    }
                     break;
                 default:
                     throw new Exception("Color not implemented!");
             }
-            System.out.println(amount + color);
         }
 
         public boolean checkAgainstValues(int g, int r, int b) {
             return maxBlue <= b && maxRed <= r && maxGreen <= g;
+        }
+
+        public int getPower() {
+            return maxBlue * maxGreen * maxRed;
         }
     }
 }
