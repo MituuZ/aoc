@@ -47,9 +47,9 @@ public class Day3 {
         }
     }
 
-    public class Node {
-        private Vector2 location;
-        private String contents;
+    public static class Node {
+        private final Vector2 location;
+        private final String contents;
 
         public Node(Vector2 location, String contents) {
             this.location = location;
@@ -61,8 +61,8 @@ public class Day3 {
         }
     }
 
-    public class NodeContainer {
-        private List<Node> nodeList = new ArrayList<>();
+    public static class NodeContainer {
+        private final List<Node> nodeList = new ArrayList<>();
 
         public void addNode(Node node) {
             nodeList.add(node);
@@ -71,15 +71,28 @@ public class Day3 {
         public List<Node> getNodeList() {
             return nodeList;
         }
+
+        public Node getNode(Vector2 location) {
+            for (Node n : nodeList) {
+                if (n.location.equals(location)) {
+                    return n;
+                }
+            }
+            return null;
+        }
     }
 
-    public class Vector2 {
-        private int x;
-        private int y;
+    public static class Vector2 {
+        private final int x;
+        private final int y;
 
         public Vector2(int x, int y) {
             this.x = x;
             this.y = y;
+        }
+
+        public boolean equals(Vector2 vector2) {
+            return vector2 != null && this.x == vector2.x && this.y == vector2.y;
         }
     }
 }
