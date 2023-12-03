@@ -31,13 +31,23 @@ public class Day3 {
     }
 
     private void deloadNodes() {
+        StringBuilder noSymbols = new StringBuilder();
+
         for (Node n : nodeContainer.getNodeList()) {
             // Here we'll have to check if the node is numeric and if it touches a symbol
             // We'll have to concat the strings that are next to each other
             // And combine the adjacent checks to see if any of the numbers touch a symbol
 
+            // ToDo: Finish this
             if (n.isNumeric()) {
-                System.out.println(n);
+                if (nodeContainer.checkAdjacentNodes(n)) {
+                    System.out.println(n);
+                }
+            } else {
+                if (!noSymbols.isEmpty()) {
+
+                }
+                noSymbols = new StringBuilder();
             }
         }
     }
@@ -74,6 +84,10 @@ public class Day3 {
                 return false;
             }
         }
+
+        public boolean isSymbol() {
+            return !isNumeric() && !contents.equals(".");
+        }
     }
 
     public static class NodeContainer {
@@ -96,8 +110,24 @@ public class Day3 {
             return null;
         }
 
-        public void checkAdjacentNodes() {
+        public boolean checkAdjacentNodes(Node node) {
+            // We need to check the previous and bottom line for -1 ,0 and 1. And -1 and 1 on the same row
+            // Check previous row
+            int prevRow = node.location.y - 1;
+            int nextRow = node.location.y + 1;
 
+            for (int i : List.of(prevRow, node.location.y, nextRow)) {
+                for (int j : List.of(-1, 0, 1)) {
+                    Vector2 vector2 = new Vector2(node.location.x + j, i);
+                    Node adjacentNode = getNode(vector2);
+                    if (adjacentNode != null) {
+                        if (adjacentNode.isSymbol()) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
         }
     }
 
