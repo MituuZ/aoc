@@ -17,13 +17,13 @@ public class Day3 {
         for (int i : resultInts) {
             res += i;
         }
-        System.out.printf("First result: %d", res);
+        System.out.printf("%nFirst result: %d", res);
     }
 
     private void process() {
         // Morph the file contents to coordinates
         // One number is created using multiple vectors
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader("sources/d3test.data"))) {
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader("sources/Day3.data"))) {
             String line = bufferedReader.readLine();
 
             int i = 0;
@@ -38,40 +38,49 @@ public class Day3 {
     }
 
     private void deloadNodes() {
-        StringBuilder noSymbols = new StringBuilder();
+        StringBuilder touchingSymbols = new StringBuilder();
         boolean touchingSymbol = false;
 
+        int rownum = 0;
         for (Node n : nodeContainer.getNodeList()) {
             // Here we'll have to check if the node is numeric and if it touches a symbol
             // We'll have to concat the strings that are next to each other
             // And combine the adjacent checks to see if any of the numbers touch a symbol
 
-            // ToDo: Finish this
-            if (n.isNumeric()) {
-                noSymbols.append(n.contents);
+            if (n.isNumeric() && rownum == n.location.y) {
+                touchingSymbols.append(n.contents);
                 if (nodeContainer.isAdjacentNodeSymbol(n)) {
                     touchingSymbol = true;
-                    System.out.println(n);
+                    System.out.println(n + " is tagged by " + n.getSymbolNode());
                 }
             } else {
-                if (!noSymbols.isEmpty()) {
+                rownum = n.location.y;
+                if (!touchingSymbols.isEmpty()) {
                     // If no symbol was hit, add the number to results
                     if (touchingSymbol) {
-                        System.out.printf("Add %s to results", noSymbols);
-                        resultInts.add(Integer.parseInt(noSymbols.toString()));
+                        System.out.printf("Add %s to results%n", touchingSymbols);
+                        resultInts.add(Integer.parseInt(touchingSymbols.toString()));
+                    } else {
+                        //System.out.printf("%n%s is not touching symbol", touchingSymbols);
                     }
                     // Reset numString
                 }
                 touchingSymbol = false;
-                noSymbols = new StringBuilder();
+                touchingSymbols = new StringBuilder();
             }
+        }
+        if (touchingSymbol) {
+            System.out.printf("%nAdd %s to results", touchingSymbols);
+            resultInts.add(Integer.parseInt(touchingSymbols.toString()));
+        } else {
+            //System.out.printf("%n%s is not touching symbol", touchingSymbols);
         }
     }
 
     private void processLine(String line, int lineIndex) {
         int i = 0;
         while (i < line.length()) {
-            Vector2 vector2 = new Vector2(lineIndex, i);
+            Vector2 vector2 = new Vector2(i, lineIndex);
             String nodeValue = line.substring(i, i+1);
             Node node = new Node(vector2, nodeValue);
             nodeContainer.addNode(node);
@@ -80,6 +89,7 @@ public class Day3 {
     }
 
     public static class Node {
+        private Node symbolNode;
         private final Vector2 location;
         private final String contents;
 
@@ -104,6 +114,14 @@ public class Day3 {
         public boolean isSymbol() {
             return !isNumeric() && !contents.equals(".");
         }
+
+        public Node getSymbolNode() {
+            return symbolNode;
+        }
+
+        public void setSymbolNode(Node n) {
+            this.symbolNode = n;
+        }
     }
 
     public static class NodeContainer {
@@ -126,12 +144,6 @@ public class Day3 {
             return null;
         }
 
-        public boolean isNextNodeNumeric(Node node) {
-            Vector2 nextLocation = new Vector2(node.location.x + 1, node.location.y);
-            Node next = getNode(nextLocation);
-            return next != null && next.isNumeric();
-        }
-
         public boolean isAdjacentNodeSymbol(Node node) {
             // We need to check the previous and bottom line for -1 ,0 and 1. And -1 and 1 on the same row
             // Check previous row
@@ -144,6 +156,7 @@ public class Day3 {
                     Node adjacentNode = getNode(vector2);
                     if (adjacentNode != null) {
                         if (adjacentNode.isSymbol()) {
+                            node.setSymbolNode(adjacentNode);
                             return true;
                         }
                     }
