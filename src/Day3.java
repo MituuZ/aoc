@@ -6,11 +6,18 @@ import java.util.List;
 
 public class Day3 {
     private final NodeContainer nodeContainer = new NodeContainer();
+    private static List<Integer> resultInts = new ArrayList<>();
 
     public static void main(String[] args) {
         Day3 day3 =  new Day3();
         day3.process();
         day3.deloadNodes();
+
+        int res = 0;
+        for (int i : resultInts) {
+            res += i;
+        }
+        System.out.printf("First result: %d", res);
     }
 
     private void process() {
@@ -32,6 +39,7 @@ public class Day3 {
 
     private void deloadNodes() {
         StringBuilder noSymbols = new StringBuilder();
+        boolean touchingSymbol = false;
 
         for (Node n : nodeContainer.getNodeList()) {
             // Here we'll have to check if the node is numeric and if it touches a symbol
@@ -40,13 +48,21 @@ public class Day3 {
 
             // ToDo: Finish this
             if (n.isNumeric()) {
-                if (nodeContainer.checkAdjacentNodes(n)) {
+                noSymbols.append(n.contents);
+                if (nodeContainer.isAdjacentNodeSymbol(n)) {
+                    touchingSymbol = true;
                     System.out.println(n);
                 }
             } else {
                 if (!noSymbols.isEmpty()) {
-
+                    // If no symbol was hit, add the number to results
+                    if (touchingSymbol) {
+                        System.out.printf("Add %s to results", noSymbols);
+                        resultInts.add(Integer.parseInt(noSymbols.toString()));
+                    }
+                    // Reset numString
                 }
+                touchingSymbol = false;
                 noSymbols = new StringBuilder();
             }
         }
@@ -110,7 +126,13 @@ public class Day3 {
             return null;
         }
 
-        public boolean checkAdjacentNodes(Node node) {
+        public boolean isNextNodeNumeric(Node node) {
+            Vector2 nextLocation = new Vector2(node.location.x + 1, node.location.y);
+            Node next = getNode(nextLocation);
+            return next != null && next.isNumeric();
+        }
+
+        public boolean isAdjacentNodeSymbol(Node node) {
             // We need to check the previous and bottom line for -1 ,0 and 1. And -1 and 1 on the same row
             // Check previous row
             int prevRow = node.location.y - 1;
