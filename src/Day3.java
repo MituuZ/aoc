@@ -47,14 +47,35 @@ public class Day3 {
             // We'll have to concat the strings that are next to each other
             // And combine the adjacent checks to see if any of the numbers touch a symbol
 
-            if (n.isNumeric() && rownum == n.location.y) {
-                touchingSymbols.append(n.contents);
-                if (nodeContainer.isAdjacentNodeSymbol(n)) {
-                    touchingSymbol = true;
-                    System.out.println(n + " is tagged by " + n.getSymbolNode());
+            if (n.isNumeric()) {
+                if (rownum == n.location.y) {
+                    touchingSymbols.append(n.contents);
+                    if (nodeContainer.isAdjacentNodeSymbol(n)) {
+                        touchingSymbol = true;
+                        System.out.println(n + " is tagged by " + n.getSymbolNode());
+                    }
+                } else {
+                    rownum = n.location.y;
+                    // Add the previous input and start a new
+                    if (!touchingSymbols.isEmpty()) {
+                        // If no symbol was hit, add the number to results
+                        if (touchingSymbol) {
+                            System.out.printf("Add %s to results%n", touchingSymbols);
+                            resultInts.add(Integer.parseInt(touchingSymbols.toString()));
+                        } else {
+                            //System.out.printf("%n%s is not touching symbol", touchingSymbols);
+                        }
+                        // Reset numString
+                    }
+                    touchingSymbol = false;
+                    touchingSymbols = new StringBuilder();
+                    touchingSymbols.append(n.contents);
+                    if (nodeContainer.isAdjacentNodeSymbol(n)) {
+                        touchingSymbol = true;
+                        System.out.println(n + " is tagged by " + n.getSymbolNode());
+                    }
                 }
             } else {
-                rownum = n.location.y;
                 if (!touchingSymbols.isEmpty()) {
                     // If no symbol was hit, add the number to results
                     if (touchingSymbol) {
