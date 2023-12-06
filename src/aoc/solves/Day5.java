@@ -36,9 +36,7 @@ public class Day5 {
                     currentMap = parseMap(line);
                     newMap = false;
                 } else {
-                    if (!line.isBlank()) {
-                        parseMapValues(line, currentMap);
-                    }
+                    parseMapValues(line, currentMap);
                 }
             }
             i++;
@@ -53,6 +51,9 @@ public class Day5 {
     }
 
     private void parseMapValues(String line, Map map) {
+        if (line.isBlank() || map == null) {
+            return;
+        }
         String[] values = line.split(" ");
 
         MapValues mapValues = new MapValues(toInt(values[0]), toInt(values[1]), toInt(values[2]));
