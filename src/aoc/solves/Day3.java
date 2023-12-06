@@ -84,7 +84,7 @@ public class Day3 {
     }
 
     private void process() {
-        nodeContainer = new NodeContainer(GridUtil.createGrid("Day3.data"));
+        nodeContainer = new NodeContainer(GridUtil.createGrid("d3.data"));
     }
 
     private void deloadNodes() {
