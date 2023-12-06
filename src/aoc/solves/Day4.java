@@ -6,10 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Day4 {
-    private List<Card> cards = new ArrayList<>();
+    private final List<Card> cards = new ArrayList<>();
     public static void main(String[] args) {
         Day4 instance = new Day4();
         instance.parseFile();
+        instance.printSolve();
     }
 
     private void parseFile() {
@@ -19,7 +20,7 @@ public class Day4 {
             l = l.replace("Card ", "");
 
             String[] numberAndData = l.split(":");
-            int number = Integer.parseInt(numberAndData[0]);
+            int number = Integer.parseInt(numberAndData[0].strip());
             String[] mNumbersAndWNumbers = numberAndData[1].split("\\|");
 
             List<Integer> myNumbers = new ArrayList<>();
@@ -43,19 +44,45 @@ public class Day4 {
         }
     }
 
+    private void printSolve() {
+        int sum = cards.stream().mapToInt(Card::getPoints).sum();
+        System.out.println("First solve: " + sum);
+    }
+
     public class Card {
-        private int number;
-        private List<Integer> myNumbers;
-        private List<Integer> winningNumbers;
+        private final int number;
+        private final List<Integer> myNumbers;
+        private final List<Integer> winningNumbers;
+        private int points = 0;
+
+        public int getPoints() {
+            return points;
+        }
 
         public Card(int number, List<Integer> myNumbers, List<Integer> winningNumbers) {
             this.number = number;
             this.myNumbers = myNumbers;
             this.winningNumbers = winningNumbers;
+            countPoints();
         }
 
         public String toString() {
-            return "Card: " + number + " | My numbers: " + myNumbers + " | Winning numbers: " + winningNumbers;
+            return "Card: " + number
+                    + " | My numbers: " + myNumbers
+                    + " | Winning numbers: " + winningNumbers
+                    + " | With points: " + points;
+        }
+
+        public void countPoints() {
+            for (int i : winningNumbers) {
+                if (myNumbers.contains(i)) {
+                    if (points == 0) {
+                        points = 1;
+                    } else {
+                        points = points * 2;
+                    }
+                }
+            }
         }
     }
 }
