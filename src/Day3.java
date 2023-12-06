@@ -7,6 +7,7 @@ import java.util.List;
 public class Day3 {
     private final NodeContainer nodeContainer = new NodeContainer();
     private static final List<Integer> resultInts = new ArrayList<>();
+    private static final List<Integer> resultInts2 = new ArrayList<>();
 
     public static void main(String[] args) {
         Day3 day3 =  new Day3();
@@ -19,6 +20,12 @@ public class Day3 {
             res += i;
         }
         System.out.printf("%nFirst result: %d", res);
+
+        res = 0;
+        for (int i : resultInts2) {
+            res += i;
+        }
+        System.out.printf("%nSecond result: %d", res);
     }
 
     private void findSharedGears() {
@@ -36,7 +43,8 @@ public class Day3 {
                         getFullNumber(adjacentNumber, processedNodes, nodeInts);
                         if (i > 1) {
                             System.out.println("Adjacent numbers for node: " + n);
-                            System.out.println(String.join(nodeInts.toString(), ", "));
+                            System.out.println(String.join(", ", nodeInts.toString()));
+                            resultInts2.add(nodeInts.get(0) * nodeInts.get(1));
                         }
                     }
                 }
@@ -46,28 +54,30 @@ public class Day3 {
 
     private void getFullNumber(Node node, List<Node> processedNodes, List<Integer> nodeInts) {
         String number = node.contents;
-        addLeftNode(node, processedNodes, number);
-        addRightNode(node, processedNodes, number);
+        number = addLeftNode(node, processedNodes, number);
+        number = addRightNode(node, processedNodes, number);
 
         nodeInts.add(Integer.parseInt(number));
     }
 
-    private void addLeftNode(Node node, List<Node> processedNodes, String number) {
+    private String addLeftNode(Node node, List<Node> processedNodes, String number) {
         Node leftNode = nodeContainer.getNode(new Vector2(node.location.x - 1, node.location.y));
         if (leftNode != null && leftNode.isNumeric()) {
             number = leftNode.contents + number;
             processedNodes.add(leftNode);
-            addLeftNode(leftNode, processedNodes, number);
+            return addLeftNode(leftNode, processedNodes, number);
         }
+        return number;
     }
 
-    private void addRightNode(Node node, List<Node> processedNodes, String number) {
+    private String addRightNode(Node node, List<Node> processedNodes, String number) {
         Node rightNode = nodeContainer.getNode(new Vector2(node.location.x + 1, node.location.y));
         if (rightNode != null && rightNode.isNumeric()) {
             number = number + rightNode.contents;
             processedNodes.add(rightNode);
-            addRightNode(rightNode, processedNodes, number);
+            return addRightNode(rightNode, processedNodes, number);
         }
+        return number;
     }
 
     private void process() {
