@@ -4,15 +4,51 @@ import aoc.util.FileUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class Day5 {
     private final List<Integer> seeds = new ArrayList<>();
     private final List<Map> maps = new ArrayList<>();
+    private final List<Seed> seedList = new ArrayList<>();
 
     public static void main(String[] args) {
         Day5 instance = new Day5();
         instance.parseFile();
+        instance.processSeeds();
         instance.printSolve();
+    }
+
+    private void processSeeds() {
+        for (int val : seeds) {
+            Seed seed = new Seed(val, new ArrayList<>());
+            String source = "seed";
+            Map currentMap;
+            int value = val;
+
+            while (source != null) {
+                currentMap = getMapWithSource(source);
+                if (currentMap != null) {
+                    value = getValueFromMap(currentMap, value);
+
+                    SeedValue seedValue = new SeedValue(currentMap.target, value);
+                    seed.seedValues().add(seedValue);
+                    source = currentMap.target();
+                } else {
+                    source = null;
+                }
+            }
+
+            seedList.add(seed);
+        }
+    }
+
+    private int getValueFromMap(Map map, int val) {
+        return 1;
+    }
+
+    private Map getMapWithSource(String source) {
+        Optional<Map> retMap = maps.stream().filter(map -> map.source.equals(source)).findFirst();
+        return retMap.orElse(null);
     }
 
     private void parseFile() {
@@ -79,22 +115,24 @@ public class Day5 {
         for (Map m : maps) {
             System.out.println(m);
         }
+        for (Seed s : seedList) {
+            System.out.println(s);
+        }
     }
-
-    /*
-    We'll need a way to match the numbers
-    - Should be same for all
-
-    We'll need a way to move from map to map
-    - We can use blanks to separate the maps
-    - String map (source) (target)
-     */
 
     private record Map(String source, String target, List<MapValues> mapValues) {
 
     }
 
     private record MapValues(int destinationStart, int sourceStart, int range) {
+
+    }
+
+    private record SeedValue(String map, int value) {
+
+    }
+
+    private record Seed(int seed, List<SeedValue> seedValues) {
 
     }
 }
