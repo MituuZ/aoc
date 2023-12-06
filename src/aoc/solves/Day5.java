@@ -73,12 +73,12 @@ public class Day5 {
                 parseSeeds(line);
                 i++;
             } else {
-                if (line.isBlank()) {
+                if (line.isBlank() || i == lines.size()-1) {
                     System.out.println("I'm blank! End of current map");
                     maps.add(currentMap);
                     newMap = true;
                 }
-                if (newMap && !line.isBlank()) {
+                if (newMap && !line.isBlank() && i != lines.size()-1) {
                     currentMap = parseMap(line);
                     newMap = false;
                 } else {
