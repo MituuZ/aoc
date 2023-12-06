@@ -6,18 +6,68 @@ import java.util.List;
 
 public class Day3 {
     private final NodeContainer nodeContainer = new NodeContainer();
-    private static List<Integer> resultInts = new ArrayList<>();
+    private static final List<Integer> resultInts = new ArrayList<>();
 
     public static void main(String[] args) {
         Day3 day3 =  new Day3();
         day3.process();
         day3.deloadNodes();
+        day3.findSharedGears();
 
         int res = 0;
         for (int i : resultInts) {
             res += i;
         }
         System.out.printf("%nFirst result: %d", res);
+    }
+
+    private void findSharedGears() {
+        List<Node> processedNodes;
+        List<Integer> nodeInts;
+        for (Node n : nodeContainer.getNodeList()) {
+            processedNodes = new ArrayList<>();
+            nodeInts = new ArrayList<>();
+            if (n.contents.equals("*") && (nodeContainer.findAdjacentNumberNodes(n) > 1)) {
+                int i = 0;
+                for (Node adjacentNumber : n.getAdjacentNumbers()) {
+                    if (!processedNodes.contains(adjacentNumber)) {
+                        i++;
+                        processedNodes.add(adjacentNumber);
+                        getFullNumber(adjacentNumber, processedNodes, nodeInts);
+                        if (i > 1) {
+                            System.out.println("Adjacent numbers for node: " + n);
+                            System.out.println(String.join(nodeInts.toString(), ", "));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void getFullNumber(Node node, List<Node> processedNodes, List<Integer> nodeInts) {
+        String number = node.contents;
+        addLeftNode(node, processedNodes, number);
+        addRightNode(node, processedNodes, number);
+
+        nodeInts.add(Integer.parseInt(number));
+    }
+
+    private void addLeftNode(Node node, List<Node> processedNodes, String number) {
+        Node leftNode = nodeContainer.getNode(new Vector2(node.location.x - 1, node.location.y));
+        if (leftNode != null && leftNode.isNumeric()) {
+            number = leftNode.contents + number;
+            processedNodes.add(leftNode);
+            addLeftNode(leftNode, processedNodes, number);
+        }
+    }
+
+    private void addRightNode(Node node, List<Node> processedNodes, String number) {
+        Node rightNode = nodeContainer.getNode(new Vector2(node.location.x + 1, node.location.y));
+        if (rightNode != null && rightNode.isNumeric()) {
+            number = number + rightNode.contents;
+            processedNodes.add(rightNode);
+            addRightNode(rightNode, processedNodes, number);
+        }
     }
 
     private void process() {
@@ -87,6 +137,7 @@ public class Day3 {
 
     public static class Node {
         private final List<Node> symbolNodes = new ArrayList<>();
+        private final List<Node> adjacentNumbers = new ArrayList<>();
         private final Vector2 location;
         private final String contents;
 
@@ -118,6 +169,10 @@ public class Day3 {
 
         public void addSymbolNode(Node n) {
             this.symbolNodes.add(n);
+        }
+
+        public List<Node> getAdjacentNumbers() {
+            return adjacentNumbers;
         }
     }
 
@@ -161,6 +216,25 @@ public class Day3 {
                 }
             }
             return anySymbolFound;
+        }
+
+        public int findAdjacentNumberNodes(Node node) {
+            // We need to check the previous and bottom line for -1 ,0 and 1. And -1 and 1 on the same row
+            // Check previous row
+            int prevRow = node.location.y - 1;
+            int nextRow = node.location.y + 1;
+
+            for (int i : List.of(prevRow, node.location.y, nextRow)) {
+                for (int j : List.of(-1, 0, 1)) {
+                    Vector2 vector2 = new Vector2(node.location.x + j, i);
+                    Node adjacentNode = getNode(vector2);
+                    if (adjacentNode != null && (adjacentNode.isNumeric())) {
+                        node.adjacentNumbers.add(adjacentNode);
+                    }
+                }
+            }
+
+            return node.adjacentNumbers.size();
         }
     }
 
