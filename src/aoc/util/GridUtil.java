@@ -1,46 +1,30 @@
 package aoc.util;
 
-import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class GridUtil {
-    private static final GridUtil instance = new GridUtil();
-
-    public static GridUtil getInstance() {
-        return instance;
-    }
-
-    public List<Node> createGrid(String file) {
-        return createGrid(this.getClass().getClassLoader().getResourceAsStream(file));
-    }
 
     /**
      * Create a list of nodes from a file that maps line to y and position to x
-     * @param stream to parse
+     * Both start at 1
+     * @param file to parse
      * @return list of nodes with coordinates (x, y)
      */
-    public static List<Node> createGrid(InputStream stream) {
+    public static List<Node> createGrid(String file) {
         List<Node> nodeList = new ArrayList<>();
+        int i = 1;
 
-        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stream))) {
-            String line = bufferedReader.readLine();
-
-            int i = 0;
-            while (line != null) {
-                processLine(line, i, nodeList);
-                line = bufferedReader.readLine();
-                i++;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        for (String line : FileUtil.getLinesAsList(file)) {
+            processLine(line, i, nodeList);
+            i++;
         }
 
         return nodeList;
     }
 
     private static void processLine(String line, int lineIndex, List<Node> nodeList) {
-        int i = 0;
+        int i = 1;
         while (i < line.length()) {
             Vector2 vector2 = new Vector2(i, lineIndex);
             String nodeValue = line.substring(i, i+1);
