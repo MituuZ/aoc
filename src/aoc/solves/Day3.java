@@ -1,4 +1,4 @@
-package aoc.Solves;
+package aoc.solves;
 
 import aoc.util.GridUtil;
 
