@@ -43,7 +43,17 @@ public class Day5 {
     }
 
     private int getValueFromMap(Map map, int val) {
-        return 1;
+        for (MapValues mv : map.mapValues()) {
+            int offset = 0;
+            for (int i = mv.sourceStart(); i <= mv.getSourceEnd(); i++) {
+                if (val == i) {
+                    return mv.destinationStart() + offset;
+                }
+                offset++;
+            }
+        }
+
+        return val;
     }
 
     private Map getMapWithSource(String source) {
@@ -125,7 +135,9 @@ public class Day5 {
     }
 
     private record MapValues(int destinationStart, int sourceStart, int range) {
-
+        public int getSourceEnd() {
+            return sourceStart + range;
+        }
     }
 
     private record SeedValue(String map, int value) {
