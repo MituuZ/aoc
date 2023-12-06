@@ -1,15 +1,12 @@
-import aoc.Util.GridUtil;
+import aoc.util.GridUtil;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static aoc.Util.GridUtil.Vector2;
+import static aoc.util.GridUtil.Vector2;
 
 public class Day3 {
-    private final NodeContainer nodeContainer = new NodeContainer();
+    private NodeContainer nodeContainer;
     private static final List<Integer> resultInts = new ArrayList<>();
     private static final List<Integer> resultInts2 = new ArrayList<>();
 
@@ -85,20 +82,7 @@ public class Day3 {
     }
 
     private void process() {
-        // Morph the file contents to coordinates
-        // One number is created using multiple vectors
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader("sources/Day3.data"))) {
-            String line = bufferedReader.readLine();
-
-            int i = 0;
-            while (line != null) {
-                processLine(line, i);
-                line = bufferedReader.readLine();
-                i++;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        nodeContainer = new NodeContainer(GridUtil.createGrid("sources/Day3.data"));
     }
 
     private void deloadNodes() {
@@ -138,17 +122,6 @@ public class Day3 {
         }
     }
 
-    private void processLine(String line, int lineIndex) {
-        int i = 0;
-        while (i < line.length()) {
-            Vector2 vector2 = new Vector2(i, lineIndex);
-            String nodeValue = line.substring(i, i+1);
-            GearNode gearNode = new GearNode(vector2, nodeValue);
-            nodeContainer.addNode(gearNode);
-            i++;
-        }
-    }
-
     public static class GearNode extends GridUtil.Node {
         private final List<GearNode> adjacentNumbers = new ArrayList<>();
 
@@ -156,13 +129,8 @@ public class Day3 {
             super(location, contents);
         }
 
-        public boolean isNumeric() {
-            try {
-                Integer.parseInt(contents);
-                return true;
-            } catch (NumberFormatException e) {
-                return false;
-            }
+        public GearNode(GridUtil.Node n) {
+            super(n.location, n.contents);
         }
 
         public boolean isSymbol() {
@@ -176,6 +144,12 @@ public class Day3 {
 
     public static class NodeContainer {
         private final List<GearNode> gearNodeList = new ArrayList<>();
+
+        public NodeContainer(List<GridUtil.Node> nodes) {
+            for (GridUtil.Node n : nodes) {
+                gearNodeList.add(new GearNode(n));
+            }
+        }
 
         public void addNode(GearNode gearNode) {
             gearNodeList.add(gearNode);
