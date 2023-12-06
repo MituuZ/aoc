@@ -22,14 +22,17 @@ public class Day5 {
         for (Seed seed : seeds) {
             String source = "seed";
             Map currentMap;
-            long value = seed.seedStart;
+            long targetValue = seed.seedStart();
+            long orgValue;
 
             while (source != null) {
                 currentMap = getMapWithSource(source);
                 if (currentMap != null) {
-                    value = getValueFromMap(currentMap, value);
+                    // Process each seed value, always starts with one
+                    orgValue = seed.seedStart();
+                    targetValue = getValueFromMap(currentMap, targetValue);
 
-                    SeedValue seedValue = new SeedValue(currentMap.target, value);
+                    SeedValue seedValue = new SeedValue(currentMap.source(), orgValue, currentMap.target(), targetValue);
                     seed.seedValues().add(seedValue);
                     source = currentMap.target();
                 } else {
@@ -150,15 +153,15 @@ public class Day5 {
         }
     }
 
-    private record SeedValue(String map, long value) {
+    private record SeedValue(String source, long sourceValue, String target, long targetValue) {
 
     }
 
     private record Seed(long seedStart, long seedEnd, List<SeedValue> seedValues) {
         public long getValueFromMap(String map) {
             for (SeedValue s : seedValues) {
-                if (s.map.equals(map)) {
-                    return s.value;
+                if (s.target.equals(map)) {
+                    return s.targetValue;
                 }
             }
 
