@@ -56,16 +56,13 @@ public class Day3 {
                     }
                 } else {
                     rownum = n.location.y;
-                    // Add the previous input and start a new
                     if (!touchingSymbols.isEmpty()) {
-                        // If no symbol was hit, add the number to results
                         if (touchingSymbol) {
                             System.out.printf("Add %s to results%n", touchingSymbols);
                             resultInts.add(Integer.parseInt(touchingSymbols.toString()));
                         } else {
                             //System.out.printf("%n%s is not touching symbol", touchingSymbols);
                         }
-                        // Reset numString
                     }
                     touchingSymbol = false;
                     touchingSymbols = new StringBuilder();
