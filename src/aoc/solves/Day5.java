@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class Day5 {
-    private final List<Integer> seeds = new ArrayList<>();
+    private final List<Long> seeds = new ArrayList<>();
     private final List<Map> maps = new ArrayList<>();
     private final List<Seed> seedList = new ArrayList<>();
 
@@ -19,11 +19,11 @@ public class Day5 {
     }
 
     private void processSeeds() {
-        for (int val : seeds) {
+        for (long val : seeds) {
             Seed seed = new Seed(val, new ArrayList<>());
             String source = "seed";
             Map currentMap;
-            int value = val;
+            long value = val;
 
             while (source != null) {
                 currentMap = getMapWithSource(source);
@@ -42,12 +42,12 @@ public class Day5 {
         }
     }
 
-    private int getValueFromMap(Map map, int val) {
+    private long getValueFromMap(Map map, long val) {
         for (MapValues mv : map.mapValues()) {
             int offset = 0;
-            for (int i = mv.sourceStart(); i <= mv.getSourceEnd(); i++) {
+            for (long i = mv.sourceStart(); i <= mv.getSourceEnd(); i++) {
                 if (val == i) {
-                    return mv.destinationStart() + offset;
+                    return (mv.destinationStart() + offset);
                 }
                 offset++;
             }
@@ -102,12 +102,12 @@ public class Day5 {
         }
         String[] values = line.split(" ");
 
-        MapValues mapValues = new MapValues(toInt(values[0]), toInt(values[1]), toInt(values[2]));
+        MapValues mapValues = new MapValues(toLong(values[0]), toLong(values[1]), toLong(values[2]));
         map.mapValues.add(mapValues);
     }
 
-    private int toInt(String s) {
-        return Integer.parseInt(s);
+    private long toLong(String s) {
+        return Long.parseLong(s);
     }
 
     private void parseSeeds(String line) {
@@ -115,7 +115,7 @@ public class Day5 {
 
         for (String s : data) {
             if (!s.isBlank()) {
-                seeds.add(Integer.parseInt(s));
+                seeds.add(Long.parseLong(s));
             }
         }
     }
@@ -134,17 +134,17 @@ public class Day5 {
 
     }
 
-    private record MapValues(int destinationStart, int sourceStart, int range) {
-        public int getSourceEnd() {
+    private record MapValues(long destinationStart, long sourceStart, long range) {
+        public long getSourceEnd() {
             return sourceStart + range;
         }
     }
 
-    private record SeedValue(String map, int value) {
+    private record SeedValue(String map, long value) {
 
     }
 
-    private record Seed(int seed, List<SeedValue> seedValues) {
+    private record Seed(long seed, List<SeedValue> seedValues) {
 
     }
 }
