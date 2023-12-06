@@ -1,3 +1,5 @@
+package aoc.Solves;
+
 import aoc.util.GridUtil;
 
 import java.util.ArrayList;
@@ -82,7 +84,7 @@ public class Day3 {
     }
 
     private void process() {
-        nodeContainer = new NodeContainer(GridUtil.createGrid("sources/Day3.data"));
+        nodeContainer = new NodeContainer(GridUtil.getInstance().createGrid("Day3.data"));
     }
 
     private void deloadNodes() {
