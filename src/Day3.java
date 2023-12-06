@@ -46,32 +46,23 @@ public class Day3 {
             if (n.isNumeric()) {
                 if (rownum != n.location.y) {
                     rownum = n.location.y;
-                    if (!touchingSymbols.isEmpty()) {
-                        if (touchingSymbol) {
+                    if (!touchingSymbols.isEmpty() && (touchingSymbol)) {
                             System.out.printf("Add %s to results%n", touchingSymbols);
                             resultInts.add(Integer.parseInt(touchingSymbols.toString()));
-                        } else {
-                            //System.out.printf("%n%s is not touching symbol", touchingSymbols);
-                        }
+
                     }
                     touchingSymbol = false;
                     touchingSymbols = new StringBuilder();
                 }
                 touchingSymbols.append(n.contents);
-                if (nodeContainer.isAdjacentNodeSymbol(n)) {
+                if (nodeContainer.setAdjacentNodeSymbols(n)) {
                     touchingSymbol = true;
-                    System.out.println(n + " is tagged by " + n.getSymbolNode());
                 }
             } else {
-                if (!touchingSymbols.isEmpty()) {
-                    // If no symbol was hit, add the number to results
-                    if (touchingSymbol) {
+                if (!touchingSymbols.isEmpty() && (touchingSymbol)) {
                         System.out.printf("Add %s to results%n", touchingSymbols);
                         resultInts.add(Integer.parseInt(touchingSymbols.toString()));
-                    } else {
-                        //System.out.printf("%n%s is not touching symbol", touchingSymbols);
-                    }
-                    // Reset numString
+
                 }
                 touchingSymbol = false;
                 touchingSymbols = new StringBuilder();
@@ -80,8 +71,6 @@ public class Day3 {
         if (touchingSymbol) {
             System.out.printf("%nAdd %s to results", touchingSymbols);
             resultInts.add(Integer.parseInt(touchingSymbols.toString()));
-        } else {
-            //System.out.printf("%n%s is not touching symbol", touchingSymbols);
         }
     }
 
@@ -97,7 +86,7 @@ public class Day3 {
     }
 
     public static class Node {
-        private Node symbolNode;
+        private final List<Node> symbolNodes = new ArrayList<>();
         private final Vector2 location;
         private final String contents;
 
@@ -123,12 +112,12 @@ public class Day3 {
             return !isNumeric() && !contents.equals(".");
         }
 
-        public Node getSymbolNode() {
-            return symbolNode;
+        public List<Node> getSymbolNodes() {
+            return symbolNodes;
         }
 
-        public void setSymbolNode(Node n) {
-            this.symbolNode = n;
+        public void addSymbolNode(Node n) {
+            this.symbolNodes.add(n);
         }
     }
 
@@ -152,7 +141,8 @@ public class Day3 {
             return null;
         }
 
-        public boolean isAdjacentNodeSymbol(Node node) {
+        public boolean setAdjacentNodeSymbols(Node node) {
+            boolean anySymbolFound = false;
             // We need to check the previous and bottom line for -1 ,0 and 1. And -1 and 1 on the same row
             // Check previous row
             int prevRow = node.location.y - 1;
@@ -164,13 +154,13 @@ public class Day3 {
                     Node adjacentNode = getNode(vector2);
                     if (adjacentNode != null) {
                         if (adjacentNode.isSymbol()) {
-                            node.setSymbolNode(adjacentNode);
-                            return true;
+                            node.addSymbolNode(adjacentNode);
+                            anySymbolFound = true;
                         }
                     }
                 }
             }
-            return false;
+            return anySymbolFound;
         }
     }
 
