@@ -1,8 +1,12 @@
+import aoc.Util.GridUtil;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static aoc.Util.GridUtil.Vector2;
 
 public class Day3 {
     private final NodeContainer nodeContainer = new NodeContainer();
@@ -29,18 +33,18 @@ public class Day3 {
     }
 
     private void findSharedGears() {
-        List<Node> processedNodes;
+        List<GearNode> processedGearNodes;
         List<Integer> nodeInts;
-        for (Node n : nodeContainer.getNodeList()) {
-            processedNodes = new ArrayList<>();
+        for (GearNode n : nodeContainer.getNodeList()) {
+            processedGearNodes = new ArrayList<>();
             nodeInts = new ArrayList<>();
             if (n.contents.equals("*") && (nodeContainer.findAdjacentNumberNodes(n) > 1)) {
                 int i = 0;
-                for (Node adjacentNumber : n.getAdjacentNumbers()) {
-                    if (!processedNodes.contains(adjacentNumber)) {
+                for (GearNode adjacentNumber : n.getAdjacentNumbers()) {
+                    if (!processedGearNodes.contains(adjacentNumber)) {
                         i++;
-                        processedNodes.add(adjacentNumber);
-                        getFullNumber(adjacentNumber, processedNodes, nodeInts);
+                        processedGearNodes.add(adjacentNumber);
+                        getFullNumber(adjacentNumber, processedGearNodes, nodeInts);
                         if (i > 1) {
                             System.out.println("Adjacent numbers for node: " + n);
                             System.out.println(String.join(", ", nodeInts.toString()));
@@ -52,30 +56,30 @@ public class Day3 {
         }
     }
 
-    private void getFullNumber(Node node, List<Node> processedNodes, List<Integer> nodeInts) {
-        String number = node.contents;
-        number = addLeftNode(node, processedNodes, number);
-        number = addRightNode(node, processedNodes, number);
+    private void getFullNumber(GearNode gearNode, List<GearNode> processedGearNodes, List<Integer> nodeInts) {
+        String number = gearNode.contents;
+        number = addLeftNode(gearNode, processedGearNodes, number);
+        number = addRightNode(gearNode, processedGearNodes, number);
 
         nodeInts.add(Integer.parseInt(number));
     }
 
-    private String addLeftNode(Node node, List<Node> processedNodes, String number) {
-        Node leftNode = nodeContainer.getNode(new Vector2(node.location.x - 1, node.location.y));
-        if (leftNode != null && leftNode.isNumeric()) {
-            number = leftNode.contents + number;
-            processedNodes.add(leftNode);
-            return addLeftNode(leftNode, processedNodes, number);
+    private String addLeftNode(GearNode gearNode, List<GearNode> processedGearNodes, String number) {
+        GearNode leftGearNode = nodeContainer.getNode(new Vector2(gearNode.getX() - 1, gearNode.getY()));
+        if (leftGearNode != null && leftGearNode.isNumeric()) {
+            number = leftGearNode.contents + number;
+            processedGearNodes.add(leftGearNode);
+            return addLeftNode(leftGearNode, processedGearNodes, number);
         }
         return number;
     }
 
-    private String addRightNode(Node node, List<Node> processedNodes, String number) {
-        Node rightNode = nodeContainer.getNode(new Vector2(node.location.x + 1, node.location.y));
-        if (rightNode != null && rightNode.isNumeric()) {
-            number = number + rightNode.contents;
-            processedNodes.add(rightNode);
-            return addRightNode(rightNode, processedNodes, number);
+    private String addRightNode(GearNode gearNode, List<GearNode> processedGearNodes, String number) {
+        GearNode rightGearNode = nodeContainer.getNode(new Vector2(gearNode.getX() + 1, gearNode.getY()));
+        if (rightGearNode != null && rightGearNode.isNumeric()) {
+            number = number + rightGearNode.contents;
+            processedGearNodes.add(rightGearNode);
+            return addRightNode(rightGearNode, processedGearNodes, number);
         }
         return number;
     }
@@ -102,10 +106,10 @@ public class Day3 {
         boolean touchingSymbol = false;
 
         int rownum = 0;
-        for (Node n : nodeContainer.getNodeList()) {
+        for (GearNode n : nodeContainer.getNodeList()) {
             if (n.isNumeric()) {
-                if (rownum != n.location.y) {
-                    rownum = n.location.y;
+                if (rownum != n.getY()) {
+                    rownum = n.getY();
                     if (!touchingSymbols.isEmpty() && (touchingSymbol)) {
                             System.out.printf("Add %s to results%n", touchingSymbols);
                             resultInts.add(Integer.parseInt(touchingSymbols.toString()));
@@ -139,25 +143,17 @@ public class Day3 {
         while (i < line.length()) {
             Vector2 vector2 = new Vector2(i, lineIndex);
             String nodeValue = line.substring(i, i+1);
-            Node node = new Node(vector2, nodeValue);
-            nodeContainer.addNode(node);
+            GearNode gearNode = new GearNode(vector2, nodeValue);
+            nodeContainer.addNode(gearNode);
             i++;
         }
     }
 
-    public static class Node {
-        private final List<Node> symbolNodes = new ArrayList<>();
-        private final List<Node> adjacentNumbers = new ArrayList<>();
-        private final Vector2 location;
-        private final String contents;
+    public static class GearNode extends GridUtil.Node {
+        private final List<GearNode> adjacentNumbers = new ArrayList<>();
 
-        public Node(Vector2 location, String contents) {
-            this.location = location;
-            this.contents = contents;
-        }
-
-        public String toString() {
-            return String.format("Node at location %d,%d with value %s", location.x, location.y, contents);
+        public GearNode(GridUtil.Vector2 location, String contents) {
+            super(location, contents);
         }
 
         public boolean isNumeric() {
@@ -173,32 +169,24 @@ public class Day3 {
             return !isNumeric() && !contents.equals(".");
         }
 
-        public List<Node> getSymbolNodes() {
-            return symbolNodes;
-        }
-
-        public void addSymbolNode(Node n) {
-            this.symbolNodes.add(n);
-        }
-
-        public List<Node> getAdjacentNumbers() {
+        public List<GearNode> getAdjacentNumbers() {
             return adjacentNumbers;
         }
     }
 
     public static class NodeContainer {
-        private final List<Node> nodeList = new ArrayList<>();
+        private final List<GearNode> gearNodeList = new ArrayList<>();
 
-        public void addNode(Node node) {
-            nodeList.add(node);
+        public void addNode(GearNode gearNode) {
+            gearNodeList.add(gearNode);
         }
 
-        public List<Node> getNodeList() {
-            return nodeList;
+        public List<GearNode> getNodeList() {
+            return gearNodeList;
         }
 
-        private Node getNode(Vector2 location) {
-            for (Node n : nodeList) {
+        private GearNode getNode(Vector2 location) {
+            for (GearNode n : gearNodeList) {
                 if (n.location.equals(location)) {
                     return n;
                 }
@@ -206,20 +194,19 @@ public class Day3 {
             return null;
         }
 
-        public boolean setAdjacentNodeSymbols(Node node) {
+        public boolean setAdjacentNodeSymbols(GearNode gearNode) {
             boolean anySymbolFound = false;
             // We need to check the previous and bottom line for -1 ,0 and 1. And -1 and 1 on the same row
             // Check previous row
-            int prevRow = node.location.y - 1;
-            int nextRow = node.location.y + 1;
+            int prevRow = gearNode.getY() - 1;
+            int nextRow = gearNode.getY() + 1;
 
-            for (int i : List.of(prevRow, node.location.y, nextRow)) {
+            for (int i : List.of(prevRow, gearNode.getY(), nextRow)) {
                 for (int j : List.of(-1, 0, 1)) {
-                    Vector2 vector2 = new Vector2(node.location.x + j, i);
-                    Node adjacentNode = getNode(vector2);
-                    if (adjacentNode != null) {
-                        if (adjacentNode.isSymbol()) {
-                            node.addSymbolNode(adjacentNode);
+                    Vector2 vector2 = new Vector2(gearNode.getX() + j, i);
+                    GearNode adjacentGearNode = getNode(vector2);
+                    if (adjacentGearNode != null) {
+                        if (adjacentGearNode.isSymbol()) {
                             anySymbolFound = true;
                         }
                     }
@@ -228,37 +215,23 @@ public class Day3 {
             return anySymbolFound;
         }
 
-        public int findAdjacentNumberNodes(Node node) {
+        public int findAdjacentNumberNodes(GearNode gearNode) {
             // We need to check the previous and bottom line for -1 ,0 and 1. And -1 and 1 on the same row
             // Check previous row
-            int prevRow = node.location.y - 1;
-            int nextRow = node.location.y + 1;
+            int prevRow = gearNode.getY() - 1;
+            int nextRow = gearNode.getY() + 1;
 
-            for (int i : List.of(prevRow, node.location.y, nextRow)) {
+            for (int i : List.of(prevRow, gearNode.getY(), nextRow)) {
                 for (int j : List.of(-1, 0, 1)) {
-                    Vector2 vector2 = new Vector2(node.location.x + j, i);
-                    Node adjacentNode = getNode(vector2);
-                    if (adjacentNode != null && (adjacentNode.isNumeric())) {
-                        node.adjacentNumbers.add(adjacentNode);
+                    Vector2 vector2 = new Vector2(gearNode.getX() + j, i);
+                    GearNode adjacentGearNode = getNode(vector2);
+                    if (adjacentGearNode != null && (adjacentGearNode.isNumeric())) {
+                        gearNode.adjacentNumbers.add(adjacentGearNode);
                     }
                 }
             }
 
-            return node.adjacentNumbers.size();
-        }
-    }
-
-    public static class Vector2 {
-        private final int x;
-        private final int y;
-
-        public Vector2(int x, int y) {
-            this.x = x;
-            this.y = y;
-        }
-
-        public boolean equals(Vector2 vector2) {
-            return vector2 != null && this.x == vector2.x && this.y == vector2.y;
+            return gearNode.adjacentNumbers.size();
         }
     }
 }
