@@ -7,6 +7,7 @@ import java.util.List;
 
 public class Day5 {
     private final List<Integer> seeds = new ArrayList<>();
+    private final List<Map> maps = new ArrayList<>();
 
     public static void main(String[] args) {
         Day5 instance = new Day5();
@@ -18,6 +19,7 @@ public class Day5 {
         List<String> lines = FileUtil.getLinesAsList("d5.data");
 
         boolean newMap = true;
+        Map currentMap = null;
         int i = 0;
         while (i < lines.size()) {
             String line = lines.get(i);
@@ -27,14 +29,38 @@ public class Day5 {
             } else {
                 if (line.isBlank()) {
                     System.out.println("I'm blank! End of current map");
+                    maps.add(currentMap);
                     newMap = true;
                 }
-                if (newMap) {
-                    // Handle
+                if (newMap && !line.isBlank()) {
+                    currentMap = parseMap(line);
+                    newMap = false;
+                } else {
+                    if (!line.isBlank()) {
+                        parseMapValues(line, currentMap);
+                    }
                 }
             }
             i++;
         }
+    }
+
+    private Map parseMap(String line) {
+        line = line.replace("map:", "").strip();
+        String[] mapSplit = line.split("-to-");
+
+        return new Map(mapSplit[0], mapSplit[1], new ArrayList<>());
+    }
+
+    private void parseMapValues(String line, Map map) {
+        String[] values = line.split(" ");
+
+        MapValues mapValues = new MapValues(toInt(values[0]), toInt(values[1]), toInt(values[2]));
+        map.mapValues.add(mapValues);
+    }
+
+    private int toInt(String s) {
+        return Integer.parseInt(s);
     }
 
     private void parseSeeds(String line) {
@@ -49,6 +75,9 @@ public class Day5 {
 
     private void printSolve() {
         System.out.println(seeds);
+        for (Map m : maps) {
+            System.out.println(m);
+        }
     }
 
     /*
@@ -60,7 +89,7 @@ public class Day5 {
     - String map (source) (target)
      */
 
-    private record Map(String source, String target, MapValues mapValues) {
+    private record Map(String source, String target, List<MapValues> mapValues) {
 
     }
 
