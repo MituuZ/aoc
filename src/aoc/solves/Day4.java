@@ -6,11 +6,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Day4 {
+    private List<Card> cardsToProcess;
     private final List<Card> cards = new ArrayList<>();
+    private final List<Card> processedCards = new ArrayList<>();
     public static void main(String[] args) {
         Day4 instance = new Day4();
         instance.parseFile();
+        instance.processCards();
         instance.printSolve();
+    }
+
+    private void processCards() {
+        if (!cardsToProcess.isEmpty()) {
+            for (Card card : cardsToProcess) {
+                processCard(card);
+            }
+        }
+    }
+
+    private void processCard(Card card) {
+
     }
 
     private void parseFile() {
@@ -42,6 +57,8 @@ public class Day4 {
 
             System.out.println(card);
         }
+
+        cardsToProcess = cards;
     }
 
     private void printSolve() {
@@ -54,13 +71,18 @@ public class Day4 {
         private final List<Integer> myNumbers;
         private final List<Integer> winningNumbers;
         private int points = 0;
+        private int matches = 0;
 
         public int getPoints() {
             return points;
         }
 
+        public int getMatches() {
+            return matches;
+        }
+
         public Card(int number, List<Integer> myNumbers, List<Integer> winningNumbers) {
-            this.number = number;
+            this.number = number - 1;
             this.myNumbers = myNumbers;
             this.winningNumbers = winningNumbers;
             countPoints();
@@ -76,6 +98,7 @@ public class Day4 {
         public void countPoints() {
             for (int i : winningNumbers) {
                 if (myNumbers.contains(i)) {
+                    matches++;
                     if (points == 0) {
                         points = 1;
                     } else {
