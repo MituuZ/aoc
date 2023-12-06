@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class Day5 {
-    private final List<Long> seeds = new ArrayList<>();
+    private final List<Seed> seeds = new ArrayList<>();
     private final List<Map> maps = new ArrayList<>();
     private final List<Seed> seedList = new ArrayList<>();
 
@@ -19,11 +19,10 @@ public class Day5 {
     }
 
     private void processSeeds() {
-        for (long val : seeds) {
-            Seed seed = new Seed(val, new ArrayList<>());
+        for (Seed seed : seeds) {
             String source = "seed";
             Map currentMap;
-            long value = val;
+            long value = seed.seedStart;
 
             while (source != null) {
                 currentMap = getMapWithSource(source);
@@ -114,10 +113,13 @@ public class Day5 {
     private void parseSeeds(String line) {
         String[] data = line.split(":")[1].split(" ");
 
-        for (String s : data) {
-            if (!s.isBlank()) {
-                seeds.add(Long.parseLong(s));
-            }
+        int i = 1;
+        while (i < data.length) {
+            long startingNumber = Long.parseLong(data[i]);
+            long endingNumber = startingNumber + Long.parseLong(data[i+1]);
+            Seed seed = new Seed(startingNumber, endingNumber, new ArrayList<>());
+            seeds.add(seed);
+            i += 2;
         }
     }
 
@@ -152,7 +154,7 @@ public class Day5 {
 
     }
 
-    private record Seed(long seed, List<SeedValue> seedValues) {
+    private record Seed(long seedStart, long seedEnd, List<SeedValue> seedValues) {
         public long getValueFromMap(String map) {
             for (SeedValue s : seedValues) {
                 if (s.map.equals(map)) {
