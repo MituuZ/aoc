@@ -45,11 +45,16 @@ public class Day5 {
     private long getValueFromMap(Map map, long val) {
         for (MapValues mv : map.mapValues()) {
             int offset = 0;
-            for (long i = mv.sourceStart(); i <= mv.getSourceEnd(); i++) {
-                if (val == i) {
-                    return (mv.destinationStart() + offset);
+            long start = mv.sourceStart();
+            long end = mv.getSourceEnd();
+
+            if (val > start && val < end) {
+                for (long i = start; i <= end; i++) {
+                    if (val == i) {
+                        return (mv.destinationStart() + offset);
+                    }
+                    offset++;
                 }
-                offset++;
             }
         }
 
@@ -125,9 +130,16 @@ public class Day5 {
         for (Map m : maps) {
             System.out.println(m);
         }
+
+        long lowestLoc = 0;
         for (Seed s : seedList) {
             System.out.println(s);
+            long seedValue = s.getValueFromMap("location");
+            if (lowestLoc == 0 || seedValue < lowestLoc) {
+                lowestLoc = seedValue;
+            }
         }
+        System.out.println("Lowest loc: " + lowestLoc);
     }
 
     private record Map(String source, String target, List<MapValues> mapValues) {
@@ -145,6 +157,14 @@ public class Day5 {
     }
 
     private record Seed(long seed, List<SeedValue> seedValues) {
+        public long getValueFromMap(String map) {
+            for (SeedValue s : seedValues) {
+                if (s.map.equals(map)) {
+                    return s.value;
+                }
+            }
 
+            return 0;
+        }
     }
 }
