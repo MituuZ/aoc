@@ -9,6 +9,7 @@ public class Day4 {
     private List<Card> cardsToProcess;
     private final List<Card> cards = new ArrayList<>();
     private final List<Card> processedCards = new ArrayList<>();
+
     public static void main(String[] args) {
         Day4 instance = new Day4();
         instance.parseFile();
@@ -18,14 +19,25 @@ public class Day4 {
 
     private void processCards() {
         if (!cardsToProcess.isEmpty()) {
-            for (Card card : cardsToProcess) {
+            List<Card> process = new ArrayList<>(cardsToProcess);
+            cardsToProcess.clear();
+
+            for (Card card : process) {
                 processCard(card);
+                processedCards.add(card);
             }
+
+            processCards();
         }
     }
 
     private void processCard(Card card) {
-
+        int index = card.getNumber() + 1;
+        for (int i = 0; i < card.getMatches(); i++) {
+            Card add = cards.get(index);
+            cardsToProcess.add(add);
+            index++;
+        }
     }
 
     private void parseFile() {
@@ -58,12 +70,13 @@ public class Day4 {
             System.out.println(card);
         }
 
-        cardsToProcess = cards;
+        cardsToProcess = new ArrayList<>(cards);
     }
 
     private void printSolve() {
         int sum = cards.stream().mapToInt(Card::getPoints).sum();
         System.out.println("First solve: " + sum);
+        System.out.println("Second solve: " + processedCards.size());
     }
 
     public class Card {
@@ -72,6 +85,10 @@ public class Day4 {
         private final List<Integer> winningNumbers;
         private int points = 0;
         private int matches = 0;
+
+        public int getNumber() {
+            return number;
+        }
 
         public int getPoints() {
             return points;
