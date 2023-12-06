@@ -43,18 +43,8 @@ public class Day3 {
 
         int rownum = 0;
         for (Node n : nodeContainer.getNodeList()) {
-            // Here we'll have to check if the node is numeric and if it touches a symbol
-            // We'll have to concat the strings that are next to each other
-            // And combine the adjacent checks to see if any of the numbers touch a symbol
-
             if (n.isNumeric()) {
-                if (rownum == n.location.y) {
-                    touchingSymbols.append(n.contents);
-                    if (nodeContainer.isAdjacentNodeSymbol(n)) {
-                        touchingSymbol = true;
-                        System.out.println(n + " is tagged by " + n.getSymbolNode());
-                    }
-                } else {
+                if (rownum != n.location.y) {
                     rownum = n.location.y;
                     if (!touchingSymbols.isEmpty()) {
                         if (touchingSymbol) {
@@ -66,11 +56,11 @@ public class Day3 {
                     }
                     touchingSymbol = false;
                     touchingSymbols = new StringBuilder();
-                    touchingSymbols.append(n.contents);
-                    if (nodeContainer.isAdjacentNodeSymbol(n)) {
-                        touchingSymbol = true;
-                        System.out.println(n + " is tagged by " + n.getSymbolNode());
-                    }
+                }
+                touchingSymbols.append(n.contents);
+                if (nodeContainer.isAdjacentNodeSymbol(n)) {
+                    touchingSymbol = true;
+                    System.out.println(n + " is tagged by " + n.getSymbolNode());
                 }
             } else {
                 if (!touchingSymbols.isEmpty()) {
