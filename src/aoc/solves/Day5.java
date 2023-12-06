@@ -44,17 +44,13 @@ public class Day5 {
 
     private long getValueFromMap(Map map, long val) {
         for (MapValues mv : map.mapValues()) {
-            int offset = 0;
+            long offset;
             long start = mv.sourceStart();
             long end = mv.getSourceEnd();
 
             if (val > start && val < end) {
-                for (long i = start; i <= end; i++) {
-                    if (val == i) {
-                        return (mv.destinationStart() + offset);
-                    }
-                    offset++;
-                }
+                offset = val - start;
+                return (mv.destinationStart() + offset);
             }
         }
 
