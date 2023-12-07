@@ -15,48 +15,37 @@ public class Day5 {
         Day5 instance = new Day5();
         instance.parseFile();
         instance.processSeeds();
-        instance.printSolve();
     }
 
     private void processSeeds() {
-        for (Seed seed : seeds) {
-            String source = "seed";
-            Map currentMap;
-            long targetValue = seed.seedStart();
-            long orgValue;
+        Map currentMap = getMapWithSource("seed");
 
-            while (source != null) {
-                currentMap = getMapWithSource(source);
-                if (currentMap != null) {
-                    // Process each seed value, always starts with one
-                    orgValue = seed.seedStart();
-                    targetValue = getValueFromMap(currentMap, targetValue);
-
-                    SeedValue seedValue = new SeedValue(currentMap.source(), orgValue, currentMap.target(), targetValue);
-                    seed.seedValues().add(seedValue);
-                    source = currentMap.target();
-                } else {
-                    source = null;
+        while (currentMap != null) {
+            System.out.println("Handling map: " + currentMap.source);
+            for (Seed seed : seeds) {
+                List<SeedValue> seedValuesToAdd = new ArrayList<>();
+                for (SeedValue seedValue : seed.getSeedValuesWithSource(currentMap.source())) {
+                    for (MapValues mapValue : currentMap.mapValues()) {
+                        SeedValue sv = null;
+                        if (mapValue.mapValueStartInSeed(seedValue)) {
+                            if (mapValue.mapValueEndInSeed(seedValue)) {
+                                System.out.println("Map value fully in seed: " + mapValue);
+                                sv = new SeedValue(currentMap.target, mapValue.sourceStart(), mapValue.getSourceEnd());
+                            } else {
+                                System.out.println("Map start in seed: " + mapValue);
+                                sv = new SeedValue(currentMap.target, mapValue.sourceStart(), seedValue.end());
+                            }
+                        }
+                        if (sv != null) {
+                            seedValuesToAdd.add(sv);
+                        }
+                    }
+                    // Check if some ranges were not hit
                 }
+                seed.seedValues().addAll(seedValuesToAdd);
             }
-
-            seedList.add(seed);
+            currentMap = getMapWithSource(currentMap.target);
         }
-    }
-
-    private long getValueFromMap(Map map, long val) {
-        for (MapValues mv : map.mapValues()) {
-            long offset;
-            long start = mv.sourceStart();
-            long end = mv.getSourceEnd();
-
-            if (val > start && val < end) {
-                offset = val - start;
-                return (mv.destinationStart() + offset);
-            }
-        }
-
-        return val;
     }
 
     private Map getMapWithSource(String source) {
@@ -77,7 +66,6 @@ public class Day5 {
                 i++;
             } else {
                 if (line.isBlank() || i == lines.size()-1) {
-                    System.out.println("I'm blank! End of current map");
                     maps.add(currentMap);
                     newMap = true;
                 }
@@ -120,27 +108,13 @@ public class Day5 {
         while (i < data.length) {
             long startingNumber = Long.parseLong(data[i]);
             long endingNumber = startingNumber + Long.parseLong(data[i+1]);
-            Seed seed = new Seed(startingNumber, endingNumber, new ArrayList<>());
+            SeedValue seedValue = new SeedValue("seed", startingNumber, endingNumber);
+            List<SeedValue> seedValues = new ArrayList<>();
+            seedValues.add(seedValue);
+            Seed seed = new Seed(startingNumber, endingNumber, seedValues);
             seeds.add(seed);
             i += 2;
         }
-    }
-
-    private void printSolve() {
-        System.out.println(seeds);
-        for (Map m : maps) {
-            System.out.println(m);
-        }
-
-        long lowestLoc = 0;
-        for (Seed s : seedList) {
-            System.out.println(s);
-            long seedValue = s.getValueFromMap("location");
-            if (lowestLoc == 0 || seedValue < lowestLoc) {
-                lowestLoc = seedValue;
-            }
-        }
-        System.out.println("Lowest loc: " + lowestLoc);
     }
 
     private record Map(String source, String target, List<MapValues> mapValues) {
@@ -148,24 +122,31 @@ public class Day5 {
     }
 
     private record MapValues(long destinationStart, long sourceStart, long range) {
+        public boolean mapValueStartInSeed(SeedValue seedValue) {
+            return this.sourceStart >= seedValue.start() && this.sourceStart() <= seedValue.end();
+        }
+        public boolean mapValueEndInSeed(SeedValue seedValue) {
+            return this.getSourceEnd() >= seedValue.start() && this.getSourceEnd() <= seedValue.end();
+        }
         public long getSourceEnd() {
             return sourceStart + range;
         }
     }
 
-    private record SeedValue(String source, long sourceValue, String target, long targetValue) {
+    private record SeedValue(String source, long start, long end) {
 
     }
 
     private record Seed(long seedStart, long seedEnd, List<SeedValue> seedValues) {
-        public long getValueFromMap(String map) {
-            for (SeedValue s : seedValues) {
-                if (s.target.equals(map)) {
-                    return s.targetValue;
+        public List<SeedValue> getSeedValuesWithSource(String source) {
+            List<SeedValue> seedValueList = new ArrayList<>();
+            for (SeedValue seedValue : seedValues) {
+                if (seedValue.source.equals(source)) {
+                    seedValueList.add(seedValue);
                 }
             }
 
-            return 0;
+            return seedValueList;
         }
     }
 }
