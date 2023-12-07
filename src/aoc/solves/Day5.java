@@ -35,6 +35,11 @@ public class Day5 {
                                 System.out.println("Map start in seed: " + mapValue);
                                 sv = new SeedValue(currentMap.target, mapValue.sourceStart(), seedValue.end());
                             }
+                        } else {
+                            if (mapValue.mapValueEndInSeed(seedValue)) {
+                                System.out.println("Map end in seed: " + mapValue);
+                                sv = new SeedValue(currentMap.target, seedValue.start(), mapValue.getSourceEnd());
+                            }
                         }
                         if (sv != null) {
                             seedValuesToAdd.add(sv);
